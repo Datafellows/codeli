@@ -1,0 +1,80 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://datafellows.nl/dataset.schema.json",
+    "type": "object",
+    "properties": {
+      "Type": {
+        "enum": [
+          "csv",
+          "json",
+          "xml",
+          "xls",
+          "xlsx",
+          "parquet",
+          "delta"
+        ]
+      },
+      "Path": {
+        "type": "string"
+      },
+      "Properties": {
+        "type": "object",
+        "properties": {
+          "Delimiter": {
+            "type": "string"
+          },
+          "Header": {
+            "type": "boolean"
+          },
+          "EnforceSchema": {
+            "type": "boolean"
+          },
+          "InferSchema": {
+            "type": "boolean"
+          },
+          "Quote": {
+            "type": "string"
+          },
+          "Escape": {
+            "type": "string"
+          },
+          "EscapeQuotes": {
+            "type": "boolean"
+          },
+          "SamplingRatio": {
+            "type": "number"
+          },
+          "MultiLine": {
+            "type": "boolean"
+          },
+          "RowTag": {
+            "type": "string"
+          },
+          "ExcludeAttribute": {
+            "type": "boolean"
+          },
+          "WorkSheet": {
+            "type": "string"
+          },
+          "Mode": {
+            "enum": ["overwrite", "append", "upsert", "scd2"]
+          },
+          "Table": {
+            "type": "string"
+          },
+          "IncludeDeletes": {
+            "type": "boolean"
+          },
+          "KeyColumns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "Type"
+    ]
+  }
