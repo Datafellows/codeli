@@ -7,11 +7,9 @@
         "enum": [
           "csv",
           "json",
-          "xml",
-          "xls",
-          "xlsx",
           "parquet",
-          "delta"
+          "delta",
+          "sql"
         ]
       },
       "Path": {
