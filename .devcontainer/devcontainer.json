@@ -1,0 +1,24 @@
+{
+  "image": "datafellows/pyspark-dev:3.2.1",
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.linting.enabled": true,
+				"python.linting.pylintEnabled": true,
+				"python.formatting.autopep8Path": "/usr/local/lib/python3.8/site-packages/autopep8",
+				"python.linting.pycodestylePath": "/usr/local/lib/python3.8/site-packages/pycodestyle",
+				"python.linting.pydocstylePath": "/usr/local/lib/python3.8/site-packages/pydocstyle",
+				"python.linting.pylintPath": "/usr/local/lib/python3.8/site-packages/pylint"
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
+		}
+	},
+}
