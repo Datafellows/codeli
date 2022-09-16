@@ -8,10 +8,10 @@
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
 				"python.linting.enabled": true,
 				"python.linting.pylintEnabled": true,
-				"python.formatting.autopep8Path": "/usr/local/lib/python3.8/site-packages/autopep8",
-				"python.linting.pycodestylePath": "/usr/local/lib/python3.8/site-packages/pycodestyle",
-				"python.linting.pydocstylePath": "/usr/local/lib/python3.8/site-packages/pydocstyle",
-				"python.linting.pylintPath": "/usr/local/lib/python3.8/site-packages/pylint"
+				"python.formatting.autopep8Path": "/usr/local/lib/python3.8/dist-packages/autopep8",
+				"python.linting.pycodestylePath": "/usr/local/lib/python3.8/dist-packages/pycodestyle",
+				"python.linting.pydocstylePath": "/usr/local/lib/python3.8/dist-packages/pydocstyle",
+				"python.linting.pylintPath": "/usr/local/lib/python3.8/dist-packages/pylint"
 			},
 			
 			// Add the IDs of extensions you want installed when the container is created.
