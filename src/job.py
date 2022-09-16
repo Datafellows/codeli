@@ -6,9 +6,6 @@ from .dataset import (
     csv_read,
     delta_overwrite,
     json_read,
-    xml_read,
-    xls_read,
-    xlsx_read,
     sql_read,
     delta_overwrite
 )
@@ -82,25 +79,6 @@ class Job:
             new_column_name_list= rename_columns(data.schema)
             data = self.spark.createDataFrame(data.rdd, new_column_name_list)
             data = add_row_hash_structured(data, self.column_row_hash)
-        elif file_type == "xml":
-            data = xml_read(self.spark, path, **properties)
-            new_column_name_list= rename_columns(data.schema)
-            data = self.spark.createDataFrame(
-                data.rdd,
-                new_column_name_list)
-            data = add_row_hash_structured(data, self.column_row_hash)
-        elif file_type == "xls":
-            data = xls_read(self.spark, path, **properties)
-            # Rename columns with special characters
-            new_column_name_list=  rename_columns_simple(data)
-            data = data.toDF(*new_column_name_list)
-            data = add_row_hash(data, self.column_row_hash)
-        elif file_type == "xlsx":
-            data = xlsx_read(self.spark, path, **properties)
-            # Rename columns with special characters
-            new_column_name_list=  rename_columns_simple(data)
-            data = data.toDF(*new_column_name_list)
-            data = add_row_hash(data, self.column_row_hash)
         elif file_type == "sql":
             data = sql_read(self.spark, path)
             data = add_row_hash(data, self.column_row_hash)
