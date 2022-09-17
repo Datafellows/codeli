@@ -12,16 +12,7 @@
 				"python.defaultInterpreterPath": "/usr/bin/python3",
 				"python.languageServer": "Default",
 				"python.linting.enabled": true,
-				"python.linting.pylintEnabled": true,
-				"python.formatting.autopep8Path": "/usr/local/lib/python3.8/dist-packages/autopep8",
-				"python.formatting.blackPath": "/usr/local/lib/python3.8/dist-packages/black",
-				"python.formatting.yapfPath": "/usr/local/lib/python3.8/dist-packages/yapf",
-				"python.linting.banditPath": "/usr/local/lib/python3.8/dist-packages/bandit",
-				"python.linting.flake8Path": "/usr/local/lib/python3.8/dist-packages/flake8",
-				"python.linting.mypyPath": "/usr/local/lib/python3.8/dist-packages/mypy",
-				"python.linting.pycodestylePath": "/usr/local/lib/python3.8/dist-packages/pycodestyle",
-				"python.linting.pydocstylePath": "/usr/local/lib/python3.8/dist-packages/pydocstyle",
-				"python.linting.pylintPath": "/usr/local/lib/python3.8/dist-packages/pylint"
+				"python.linting.pylintEnabled": true
 			},
 			"extensions": [
 				"ms-python.python",
@@ -32,5 +23,6 @@
 	"forwardPorts": [
 		4040
 	],
+	"postCreateCommand": "pip3 install --user -r requirements.txt",
 	"remoteUser": "vscode"
 }

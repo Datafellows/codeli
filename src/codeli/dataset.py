@@ -2,6 +2,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from delta import DeltaTable
 
+
 def json_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     """Reads a JSON file into a dataframe
 
@@ -18,6 +19,7 @@ def json_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     mutli_line = kwargs.get("multiLine", True)
     data = spark.read.json(source, multiLine=mutli_line)
     return data
+
 
 def csv_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     """Reads a csv file into a dataframe
@@ -63,6 +65,7 @@ def csv_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
         .csv(source)
     return data
 
+
 def sql_read(spark: SparkSession, source: str) -> DataFrame:
     """Loads a spark sql statement into a dataframe
 
@@ -75,6 +78,7 @@ def sql_read(spark: SparkSession, source: str) -> DataFrame:
     """
     data = spark.sql(source)
     return data
+
 
 def delta_read(spark: SparkSession, source: str) -> DataFrame:
     """Loads a delta table into a dataframe
@@ -89,7 +93,8 @@ def delta_read(spark: SparkSession, source: str) -> DataFrame:
     data = spark.read.format("delta").load(source)
     return data
 
-def delta_overwrite(data: DataFrame, table: str, path: str ) -> None:
+
+def delta_overwrite(data: DataFrame, table: str, path: str) -> None:
     """Writes a dataframe to a delta table overwriting an existing table.
 
     :param data: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
@@ -101,18 +106,19 @@ def delta_overwrite(data: DataFrame, table: str, path: str ) -> None:
 
     delta = data.write.format("delta") \
         .mode("overwrite") \
-        .option("overwriteSchema", "true") 
-    
+        .option("overwriteSchema", "true")
+
     if path:
         delta = delta.option("path", path)
 
     delta.saveAsTable(table)
 
+
 def delta_append(
-    spark: SparkSession,
-    source: DataFrame,
-    destination: str,
-    hash_column: str) -> None:
+        spark: SparkSession,
+        source: DataFrame,
+        destination: str,
+        hash_column: str) -> None:
     """Takes an input delta table and add rows that do not exist or have changed. Rows are never updated, only added.
 
     :param spark: A :class:`pyspark.sql.SparkSession` object.
@@ -125,18 +131,19 @@ def delta_append(
     :type hash_column: str
     """
     dt_destination = DeltaTable.forPath(spark, destination)
-    dt_destination.alias("dst").merge( \
-        source.alias("src"), \
+    dt_destination.alias("dst").merge(
+        source.alias("src"),
         f"dst.{hash_column}=src.{hash_column}") \
         .whenNotMatchedInsertAll() \
-            .execute()
+        .execute()
+
 
 def delta_upsert(
-    spark: SparkSession,
-    source: DataFrame,
-    destination: str,
-    key_column: str,
-    hash_column: str) -> None:
+        spark: SparkSession,
+        source: DataFrame,
+        destination: str,
+        key_column: str,
+        hash_column: str) -> None:
     """Takes an input delta table and merges the data with the destination table.
 
     :param spark: A :class:`pyspark.sql.SparkSession` object.
@@ -153,19 +160,20 @@ def delta_upsert(
 
     dt_destination = DeltaTable.forPath(spark, destination)
 
-    dt_destination.alias("dst").merge( \
-        source.alias("src"), \
+    dt_destination.alias("dst").merge(
+        source.alias("src"),
         f"dst.{key_column}=src.{key_column}") \
         .whenMatchedUpdateAll(f"src.{hash_column} != dst.{hash_column}") \
         .whenNotMatchedInsertAll() \
-            .execute()
+        .execute()
+
 
 def delta_archive(
-    spark: SparkSession,
-    source: DataFrame,
-    destination: str,
-    key_column: str,
-    **kwargs):
+        spark: SparkSession,
+        source: DataFrame,
+        destination: str,
+        key_column: str,
+        **kwargs):
     """Takes an input delta table and transforms it based on the given key to a type 2 table
 
     :param spark: A :class:`pyspark.sql.SparkSession` object.
@@ -182,7 +190,8 @@ def delta_archive(
 
     hash_column = kwargs.get("hash_column", "_rowhash_")
     closed_date_column = kwargs.get("closed_date_column", "_closed_date_")
-    closed_date_value = kwargs.get("closed_date_value", "9999-12-31T23:59:59.999999+00:00")
+    closed_date_value = kwargs.get(
+        "closed_date_value", "9999-12-31T23:59:59.999999+00:00")
     dt_destination = DeltaTable.forPath(spark, destination)
 
     df_new = source.alias("src") \
@@ -200,10 +209,10 @@ def delta_archive(
     dt_destination.alias("dst").merge(
         df_upd.alias("upd"),
         f"dst.{key_column} = upd._merge_key") \
-            .whenMatchedUpdate(
-                condition=f"dst.{closed_date_column}='{closed_date_value}' AND dst.{hash_column} <> upd.{hash_column}",
-                set = {
-                    closed_date_column: "current_timestamp()"
-                }
-            ).whenNotMatchedInsertAll() \
-            .execute()
+        .whenMatchedUpdate(
+        condition=f"dst.{closed_date_column}='{closed_date_value}' AND dst.{hash_column} <> upd.{hash_column}",
+        set={
+            closed_date_column: "current_timestamp()"
+        }
+    ).whenNotMatchedInsertAll() \
+        .execute()
