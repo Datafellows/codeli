@@ -3,18 +3,26 @@
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
-			// Set *default* container specific settings.json values on container create.
 			"settings": { 
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash"
+					}
+				},
+				"python.defaultInterpreterPath": "/usr/bin/python3",
+				"python.languageServer": "Default",
 				"python.linting.enabled": true,
 				"python.linting.pylintEnabled": true,
 				"python.formatting.autopep8Path": "/usr/local/lib/python3.8/dist-packages/autopep8",
+				"python.formatting.blackPath": "/usr/local/lib/python3.8/dist-packages/black",
+				"python.formatting.yapfPath": "/usr/local/lib/python3.8/dist-packages/yapf",
+				"python.linting.banditPath": "/usr/local/lib/python3.8/dist-packages/bandit",
+				"python.linting.flake8Path": "/usr/local/lib/python3.8/dist-packages/flake8",
+				"python.linting.mypyPath": "/usr/local/lib/python3.8/dist-packages/mypy",
 				"python.linting.pycodestylePath": "/usr/local/lib/python3.8/dist-packages/pycodestyle",
 				"python.linting.pydocstylePath": "/usr/local/lib/python3.8/dist-packages/pydocstyle",
 				"python.linting.pylintPath": "/usr/local/lib/python3.8/dist-packages/pylint"
 			},
-			
-			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
 				"ms-python.vscode-pylance"
