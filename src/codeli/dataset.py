@@ -1,6 +1,5 @@
 """This module interacts with various datasets"""
 from pyspark.sql import DataFrame, SparkSession
-from delta import DeltaTable
 
 
 def json_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
@@ -10,13 +9,13 @@ def json_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     :type spark: :class:`pyspark.sql.SparkSession`
     :param source: The path to the json file or folder.
     :type source: str
-    :keyword bool multiLine: When `True` reads the Json document with multiple lines. Defaults to `True`.
+    :keyword bool MultiLine: When `True` reads the Json document with multiple lines. Defaults to `True`.
     :return: Returns a :class:`pyspark.sql.DataFrame` object.
     :rtype: DataFrame
     """
 
     # Set defaults
-    mutli_line = kwargs.get("multiLine", True)
+    mutli_line = kwargs.get("MultiLine", True)
     data = spark.read.json(source, multiLine=mutli_line)
     return data
 
@@ -42,15 +41,15 @@ def csv_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     """
 
     # Set defaults
-    delimiter = kwargs.get("delimiter", ",")
-    header = kwargs.get("header", True)
-    enforce_schema = kwargs.get("enforceSchema", False)
-    infer_schema = kwargs.get("inferSchema", False)
-    quote = kwargs.get("quote", '"')
-    escape = kwargs.get("escape", '\\')
-    escape_quotes = kwargs.get("escapeQuotes", True)
-    sampling_ratio = kwargs.get("samplingRatio", 1.0)
-    multi_line = kwargs.get("multiLine", True)
+    delimiter = kwargs.get("Delimiter", ",")
+    header = kwargs.get("Header", True)
+    enforce_schema = kwargs.get("EnforceSchema", False)
+    infer_schema = kwargs.get("InferSchema", False)
+    quote = kwargs.get("Quote", '"')
+    escape = kwargs.get("Escape", '\\')
+    escape_quotes = kwargs.get("EscapeQuotes", True)
+    sampling_ratio = kwargs.get("SamplingRatio", 1.0)
+    multi_line = kwargs.get("MultiLine", True)
 
     data = spark.read \
         .option("delimiter", delimiter) \
@@ -93,126 +92,6 @@ def delta_read(spark: SparkSession, source: str) -> DataFrame:
     data = spark.read.format("delta").load(source)
     return data
 
-
-def delta_overwrite(data: DataFrame, table: str, path: str) -> None:
-    """Writes a dataframe to a delta table overwriting an existing table.
-
-    :param data: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
-    :type data: :class:`pyspark.sql.DataFrame`
-    :param table: The name of the managed table.
-    :type table: str
-    :keyword str Path: The path to write the table to. Defaults to `None`.
-    """
-
-    delta = data.write.format("delta") \
-        .mode("overwrite") \
-        .option("overwriteSchema", "true")
-
-    if path:
-        delta = delta.option("path", path)
-
-    delta.saveAsTable(table)
-
-
-def delta_append(
-        spark: SparkSession,
-        source: DataFrame,
-        destination: str,
-        hash_column: str) -> None:
-    """Takes an input delta table and add rows that do not exist or have changed. Rows are never updated, only added.
-
-    :param spark: A :class:`pyspark.sql.SparkSession` object.
-    :type spark: :class:`pyspark.sql.SparkSession`
-    :param source: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
-    :type source: :class:`pyspark.sql.DataFrame`
-    :param destination: The name of the Delta table.
-    :type destination: str
-    :param hash_column: The hash column that identifies the row.
-    :type hash_column: str
-    """
-    dt_destination = DeltaTable.forPath(spark, destination)
-    dt_destination.alias("dst").merge(
-        source.alias("src"),
-        f"dst.{hash_column}=src.{hash_column}") \
-        .whenNotMatchedInsertAll() \
-        .execute()
-
-
-def delta_upsert(
-        spark: SparkSession,
-        source: DataFrame,
-        destination: str,
-        key_column: str,
-        hash_column: str) -> None:
-    """Takes an input delta table and merges the data with the destination table.
-
-    :param spark: A :class:`pyspark.sql.SparkSession` object.
-    :type spark: :class:`pyspark.sql.SparkSession`
-    :param source: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
-    :type source: :class:`pyspark.sql.DataFrame`
-    :param destination: The path to write the Delta table.
-    :type destination: str
-    :param key_column: The name of the key column.
-    :type key_column: str
-    :param hash_column: The name of the hash column that is used to identify changes to the row
-    :type hash_column: str
-    """
-
-    dt_destination = DeltaTable.forPath(spark, destination)
-
-    dt_destination.alias("dst").merge(
-        source.alias("src"),
-        f"dst.{key_column}=src.{key_column}") \
-        .whenMatchedUpdateAll(f"src.{hash_column} != dst.{hash_column}") \
-        .whenNotMatchedInsertAll() \
-        .execute()
-
-
-def delta_archive(
-        spark: SparkSession,
-        source: DataFrame,
-        destination: str,
-        key_column: str,
-        **kwargs):
-    """Takes an input delta table and transforms it based on the given key to a type 2 table
-
-    :param spark: A :class:`pyspark.sql.SparkSession` object.
-    :type spark: :class:`pyspark.sql.SparkSession`
-    :param source: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
-    :type source: :class:`pyspark.sql.DataFrame`
-    :param destination: The path to write the Delta table.
-    :type destination: str
-    :param key_column: The name of the key column.
-    :keyword str hashColumn: Name of the hash column. Defaults to *_rowhash_*
-    :keyword str closedDateColumn: The name of the column to use or create for the closed date.
-    :keyword str closedDateValue: The value to use for the high date watermakr. Defaults to 9999-12-31.
-    """
-
-    hash_column = kwargs.get("hash_column", "_rowhash_")
-    closed_date_column = kwargs.get("closed_date_column", "_closed_date_")
-    closed_date_value = kwargs.get(
-        "closed_date_value", "9999-12-31T23:59:59.999999+00:00")
-    dt_destination = DeltaTable.forPath(spark, destination)
-
-    df_new = source.alias("src") \
-        .join(dt_destination.toDF().alias("dst"), key_column) \
-        .where(
-            f"dst.{closed_date_column}='{closed_date_value}' AND dst.{hash_column} <> src.{hash_column}") \
-        .selectExpr('src.*')
-
-    df_upd = (
-        df_new
-        .selectExpr("NULL as _merge_key", *source.columns)
-        .union(source.selectExpr(f"{key_column} as _merge_key", *source.columns))
-    )
-
-    dt_destination.alias("dst").merge(
-        df_upd.alias("upd"),
-        f"dst.{key_column} = upd._merge_key") \
-        .whenMatchedUpdate(
-        condition=f"dst.{closed_date_column}='{closed_date_value}' AND dst.{hash_column} <> upd.{hash_column}",
-        set={
-            closed_date_column: "current_timestamp()"
-        }
-    ).whenNotMatchedInsertAll() \
-        .execute()
+def delta_write(data: DataFrame, table: str) -> None:
+    """Writes a dataframe into a (managed) table"""
+    data.write.saveAsTable(table)

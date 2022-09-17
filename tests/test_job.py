@@ -1,18 +1,8 @@
 """Module with Ingestion tests"""
-import os
 import json
-import pytest
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import (
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-    IntegerType)
-
 from delta import DeltaTable, configure_spark_with_delta_pip
-
 from codeli.job import Job
 
 class TestJob:
@@ -33,7 +23,7 @@ class TestJob:
         current_job = Job(self.spark, "test_minimal")
         current_job.execute(**_get_configuration("tests/config/minimal.json"))
 
-        df_test = DeltaTable.forName(self.spark, "test_case_1")
+        df_test = DeltaTable.forName(self.spark, "test_case_1").toDF()
         assert df_test.count() == 1
 
 def _get_configuration(file_path: str):

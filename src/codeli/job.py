@@ -4,9 +4,10 @@ from pyspark.sql import DataFrame, SparkSession
 
 from .dataset import (
     csv_read,
+    delta_write,
     json_read,
     sql_read,
-    delta_overwrite
+    delta_write
 )
 
 from .utilities import (
@@ -140,11 +141,8 @@ class Job:
 
         if destination_type == "delta":
             table = properties.pop("Table")
-            delta_overwrite(
-                data,
-                table,
-                path
-            )
+            delta_write(data, table)
+
         self._write_log(
             "INFO",
             "write_dataframe",
