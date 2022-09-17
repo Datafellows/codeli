@@ -1,9 +1,9 @@
 {
-  "image": "datafellows/pyspark-dev:3.2.1",
+	"image": "datafellows/pyspark-dev:3.2.1",
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
-			"settings": { 
+			"settings": {
 				"terminal.integrated.profiles.linux": {
 					"bash": {
 						"path": "/bin/bash"
@@ -29,6 +29,8 @@
 			]
 		}
 	},
-	"forwardPorts": [4040],
+	"forwardPorts": [
+		4040
+	],
 	"remoteUser": "vscode"
 }
