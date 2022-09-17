@@ -28,20 +28,18 @@ def rename_columns_simple(data: DataFrame):
 def create_delta_if_not_exists(
     spark: SparkSession,
     schema: StructType,
-    location: str,
     table_name: str,
+    location: str = None,
     partition_key: str = None):
-    if not DeltaTable.isDeltaTable(spark, location):
-        if len(partition_key)==0:
-            DeltaTable.create(spark) \
-                .tableName(table_name) \
-                .addColumns(schema) \
-                .location(location) \
-                .execute()
-        else:
-            DeltaTable.create(spark) \
-                .tableName(table_name) \
-                .addColumns(schema) \
-                .partitionedBy(partition_key) \
-                .location(location) \
-                .execute()
+    
+    delta = DeltaTable.createIfNotExists(spark) \
+        .tableName(table_name) \
+        .addColumns(schema)
+
+    if location:
+        delta = delta.location(location)
+
+    if partition_key:
+        delta = delta.partitionedBy(partition_key.split(","))
+
+    delta.execute()
