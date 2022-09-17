@@ -4,7 +4,6 @@ from pyspark.sql import DataFrame, SparkSession
 
 from .dataset import (
     csv_read,
-    delta_overwrite,
     json_read,
     sql_read,
     delta_overwrite
