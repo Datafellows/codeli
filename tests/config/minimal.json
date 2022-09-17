@@ -1,0 +1,17 @@
+{
+    "datasets":
+    {
+        "source": {
+            "name": "Test dataset",
+            "type": "csv",
+            "path": "tests/data/test-case-1.csv"
+        },
+        "destination": {
+            "name": "Test delta table",
+            "type": "overwrite",
+            "properties": {
+                "table": "test_case_1"
+            }
+        }
+    }
+}
