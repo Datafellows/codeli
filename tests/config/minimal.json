@@ -1,16 +1,16 @@
 {
-    "datasets":
+    "$schema": "https://raw.githubusercontent.com/Datafellows/codeli/main/schemas/job.schema.json",
+    "Name": "Test_1",
+    "Datasets":
     {
-        "source": {
-            "name": "Test dataset",
-            "type": "csv",
-            "path": "tests/data/test-case-1.csv"
+        "Source": {
+            "Type": "csv",
+            "Path": "tests/data/test-case-1.csv"
         },
-        "destination": {
-            "name": "Test delta table",
-            "type": "overwrite",
-            "properties": {
-                "table": "test_case_1"
+        "Destination": {
+            "Type": "delta",
+            "Properties": {
+                "Table": "test_case_1"
             }
         }
     }

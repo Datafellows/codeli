@@ -26,15 +26,15 @@ def csv_read(spark: SparkSession, source: str, **kwargs) -> DataFrame:
     :type spark: :class:`pyspark.sql.SparkSession`
     :param source: The path to the csv file or folder.
     :type source: str
-    :keyword str delimiter: The delimiter to use. Defaults to ,.
-    :keyword bool header: A `bool` to specifiy wheter or not to read the header. Defaults to `True`.
-    :keyword bool enforceShema: A `bool` to specify whether or not to enforce the schema. Defaults to `False`.
-    :keyword bool inferSchema: A `bool` to indiate to read the schema. This requires an additional pass for the data. Defaults to `False`.
-    :keyword str quote: Specifies the charachter to use for quoting strings. Defaults to ".
-    :keyword str escape: Specifies the escape character. Defaults to \\.
-    :keyword bool escapeQuotes: Specifies if quotes should be escaped. Default to `True`.
-    :keyword number samplingRatio: Defines fraction of rows for schema inferring. Defaults to 1.0.
-    :keyword bool multiLine: Parse one record, which may span multiple lines, per file. Defaults to `True`.
+    :keyword str Delimiter: The delimiter to use. Defaults to ,.
+    :keyword bool Header: A `bool` to specifiy wheter or not to read the header. Defaults to `True`.
+    :keyword bool EnforceShema: A `bool` to specify whether or not to enforce the schema. Defaults to `False`.
+    :keyword bool InferSchema: A `bool` to indiate to read the schema. This requires an additional pass for the data. Defaults to `False`.
+    :keyword str Quote: Specifies the charachter to use for quoting strings. Defaults to ".
+    :keyword str Escape: Specifies the escape character. Defaults to \\.
+    :keyword bool EscapeQuotes: Specifies if quotes should be escaped. Default to `True`.
+    :keyword number SamplingRatio: Defines fraction of rows for schema inferring. Defaults to 1.0.
+    :keyword bool MultiLine: Parse one record, which may span multiple lines, per file. Defaults to `True`.
     :return: Returns a :class:`pyspark.sql.DataFrame` object.
     :rtype: DataFrame
     """
@@ -89,22 +89,24 @@ def delta_read(spark: SparkSession, source: str) -> DataFrame:
     data = spark.read.format("delta").load(source)
     return data
 
-def delta_overwrite(data: DataFrame, destination: str, table: str) -> None:
+def delta_overwrite(data: DataFrame, table: str, path: str ) -> None:
     """Writes a dataframe to a delta table overwriting an existing table.
 
     :param data: The :class:`pyspark.sql.DataFrame` to write to a Delta table.
     :type data: :class:`pyspark.sql.DataFrame`
-    :param destination: The path to write the Delta table.
-    :type destination: str
     :param table: The name of the managed table.
     :type table: str
+    :keyword str Path: The path to write the table to. Defaults to `None`.
     """
 
-    data.write.format("delta") \
+    delta = data.write.format("delta") \
         .mode("overwrite") \
-        .option("path", destination) \
-        .option("overwriteSchema", "true") \
-        .saveAsTable(table)
+        .option("overwriteSchema", "true") 
+    
+    if path:
+        delta = delta.option("path", path)
+
+    delta.saveAsTable(table)
 
 def delta_append(
     spark: SparkSession,

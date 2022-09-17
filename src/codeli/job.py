@@ -47,9 +47,9 @@ class Job:
     def execute(self, **kwargs):
         """This function executes the configuration of the transformation
         """
-        dataset_source = kwargs["datasets"].pop("source")
-        dataset_destination = kwargs["datasets"].pop("destination")
-        transformations = kwargs.get("transformations")
+        dataset_source = kwargs["Datasets"].pop("Source")
+        dataset_destination = kwargs["Datasets"].pop("Destination")
+        transformations = kwargs.get("Transformations")
 
         # Extracting source into dataframe
         data = self._ingest_source(**dataset_source)
@@ -63,10 +63,9 @@ class Job:
         self._write_dataframe(data, dataset_destination)
 
     def _ingest_source(self, **source ) -> DataFrame:
-        name = source.pop("name")
-        path = source.pop("path")
-        file_type = source.pop("type")
-        properties = source.get("properties", {})
+        path = source.pop("Path")
+        file_type = source.pop("Type")
+        properties = source.get("Properties", {})
 
         if file_type == "csv":
             data = csv_read(self.spark, path, **properties)
@@ -88,15 +87,15 @@ class Job:
         self._write_log(
             "INFO",
             "ingest-source",
-            f"Dataset {name} ({file_type}) loaded"
+            f"Dataset {path} ({file_type}) loaded"
         )
         data = add_source_file_name(data, self.column_source_file)
         data = add_execution_id(data,self.execution_id, self.column_execution_id)
         return data
 
     def _transformation_step(self, data: DataFrame, step: Dict) -> DataFrame:
-        step_name = step.pop("name")
-        step_type = step.pop("type")
+        step_name = step.pop("Name")
+        step_type = step.pop("Type")
 
         self._write_log(
             "INFO",
@@ -136,22 +135,21 @@ class Job:
         raise Exception(f"Unknown transformation step. {step_type}")
 
     def _write_dataframe(self, data: DataFrame, destination: Dict):
-        name = destination.pop("name")
-        destination_type = destination.pop("type")
-        path = destination.pop("path")
-        properties = destination.get("properties", {})
+        destination_type = destination.pop("Type")
+        path = destination.get("Path", None)
+        properties = destination.get("Properties", {})
 
-        if destination_type == "overwrite":
-            table = properties.pop("table")
+        if destination_type == "delta":
+            table = properties.pop("Table")
             delta_overwrite(
                 data,
-                path,
-                table
+                table,
+                path
             )
         self._write_log(
             "INFO",
             "write_dataframe",
-            f"Starting write of {name} ({destination_type})"
+            f"Starting write of ({destination_type})"
         )
 
     def _write_log(self, level, source, message):
