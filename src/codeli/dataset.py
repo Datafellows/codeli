@@ -94,4 +94,4 @@ def delta_read(spark: SparkSession, source: str) -> DataFrame:
 
 def delta_write(data: DataFrame, table: str) -> None:
     """Writes a dataframe into a (managed) table"""
-    data.write.saveAsTable(table)
+    data.write.format("delta").saveAsTable(table)

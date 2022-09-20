@@ -23,6 +23,6 @@
 	"forwardPorts": [
 		4040
 	],
-	"postCreateCommand": "pip3 install --user -r requirements.txt",
+	"postCreateCommand": "pip3 install --user --no-warn-script-location -r requirements.txt",
 	"remoteUser": "vscode"
 }
